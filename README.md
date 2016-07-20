@@ -27,9 +27,9 @@ Then run the `rails server` and go to `http://localhost:3000` to make sure every
 
 Git initialize:
 ```console
-	$ git init
-	$ git add .
-	$ git commit -am 'Initial Commit'
+$ git init
+$ git add .
+$ git commit -am 'Initial Commit'
 ```
 
 # Post
@@ -41,40 +41,41 @@ $ rails g controller posts
 Then we need to create some routes.     
 `blog/config/routes.rb`. We need the post to be at the root of the application.    
 ```ruby
-	Rails.application.routes.draw do
-	  resources :posts
-	  root "posts#index"
-	end
+Rails.application.routes.draw do
+  resources :posts
+  root "posts#index"
+end
 ```
 And I know the controller needs a index action, so let's open up the post controller and define it.     
 `/blog/app/controllers/posts_controller.rb`
 
 ```ruby
-	class PostsController < ApplicationController
-		def index
-		end
+class PostsController < ApplicationController
+	def index
 	end
+end
 ```
 
 Now, if we run the rails server and go to `http://localhost:3000`, we will get an error "Template is missing" which tells us exactly that we need to create a `view`.     
 So under `app/views/posts`, we are going to add a new file `index.html.erb`.
 Let's put a placeholder:
-```html
 
+```html
+	
 	<h1>This is the index.html.erb file.. Yay!</h1>
 ```
-Then Go back to our browser and refresh, you'll see the index page.
+Then go back to our browser and refresh, you'll see the index page.
 
 Next, we want to have the ability to create new posts.     
 To do that, let's start in our post controller and we're gonna add a new action.
 ```ruby
-	class PostsController < ApplicationController
-		def index
-		end
-
-		def new
-		end
+class PostsController < ApplicationController
+	def index
 	end
+
+	def new
+	end
+end
 ```
 Then, under `app/views/posts`, let's create a new file and we'll call this `new.html.erb`.
 
@@ -122,44 +123,44 @@ In order to save our post, we need to define a `create` method.
 Under `app/controllers/posts_controller.rb`
 
 ```ruby
-	class PostsController < ApplicationController
-		def index
-		end
-
-		def new
-		end
-
-		def create
-			@post = Post.new(post_params)
-			@post.save
-
-			redirect_to @post
-		end	
+class PostsController < ApplicationController
+	def index
 	end
+
+	def new
+	end
+
+	def create
+		@post = Post.new(post_params)
+		@post.save
+
+		redirect_to @post
+	end	
+end
 ```
 
 Rails4 has a security feature called a strong parameters you have to define or explicitly say what parameters you want to allow.
 So under the private method:
 ```ruby
-	class PostsController < ApplicationController
-		def index
-		end
-
-		def new
-		end
-
-		def create
-			@post = Post.new(post_params)
-			@post.save
-
-			redirect_to @post
-		end	
-
-		private
-			def post_params
-				params.require(:post).permit(:title, :body)
-			end
+class PostsController < ApplicationController
+	def index
 	end
+
+	def new
+	end
+
+	def create
+		@post = Post.new(post_params)
+		@post.save
+
+		redirect_to @post
+	end	
+
+	private
+		def post_params
+			params.require(:post).permit(:title, :body)
+		end
+end
 ```
 
 Then, we need to create our show page to show our new post.
@@ -186,12 +187,53 @@ So we can save this but it's not going to work because we're grabbing at post wh
 Before we refresh, let's go ahead and do that     
 Under `app/controllers/posts_controller.rb`
 ```ruby
-	def show
-		@post = Post.find(params[:id])
-	end
+def show
+	@post = Post.find(params[:id])
+end
 ```
 So now we can new post in `http://localhost:3000/posts/new`
 
-Then, we want to list out all of the post.
+Then, we want to list out all of the post that's going to be at slash or at the root of the application(http://localhost:3000).
+
+So first we need to edit are `index action`.     
+Under `app/controllers/posts_controller.rb`
+```ruby
+class PostsController < ApplicationController
+	def index
+		@posts = Post.all
+	end
+	...
+```
+And this would work by itself. But I also want to sense the blog. I want the newer posts to show up on top.
+So we're gonna to order and then created at descending. So this going to reverse the post order.
+```ruby
+class PostsController < ApplicationController
+	def index
+		@posts = Post.all.order('created_at DESC')
+	end
+	...
+```
+
+And then inside of our `app/views/posts/index.html.erb`     
+I'm going to do a loop through each of the posts.
+So for each of the post, I want to put them in a post rapper `div` and the title of the post is going to be in `h2` tag class of title.
+And we're gonna to do link to `post.title` and that's going to be the post path.
+And then, on the index page, I don't want the description we're just going to do the time at risk or the date it was created that.
+On the index, I want to have the actual date.
+```ruby
+
+	<%= @posts.each do |post| %>
+		<div class="post_wrapper">
+			<h2 class="title"><%= link_to post.title, post %></h2>
+			<p class="date"><%= post.created_at.strftime("%B, %d, %Y") %></p>
+		</div>
+	<% end %>
+```
+We still have the ability to edit or delete a post yet.
+I'm just going to go ahead and commit what we have.
+```console
+$ git add .
+$ git commit -am 'Add posts'
+```
 
 To be continute...
