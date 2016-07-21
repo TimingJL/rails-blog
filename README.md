@@ -1038,7 +1038,7 @@ And also I want to add some buttons for us to add a new post and sign-in or logo
 ```
 You can see `All Post` shows up.
 
-Note: My button tag don't work in Rails5, so I change it to the following code:
+Note: My button tag doesn't work in Rails5, so I change it to the following code:
 ```html
 
   <body>
