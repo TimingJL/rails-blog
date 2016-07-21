@@ -1092,5 +1092,6 @@ $ git commit -am "Styling and structure"
 $ git checkout master
 $ git merge styling
 ```
+![image](https://github.com/TimingJL/blog/blob/master/pic/Styling%20and%20structure.jpeg)
 
 To be continute...
