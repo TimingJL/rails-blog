@@ -1,4 +1,9 @@
 # Learning by Doing 
+
+![Ubuntu version](https://img.shields.io/badge/Ubuntu-16.04%20LTS-orange.svg)
+![Rails version](https://img.shields.io/badge/Rails-v5.0.0-blue.svg)
+![ruby version](https://img.shields.io/badge/ruby-v2.3.1p112-red.svg)
+
 Mackenzie Child's video really inspire me. So I decided to follow all of his rails video tutorial to learn how to build a web app. Through the video, I would try to build the web app by my self and record the courses step by step in text to facilitate the review.
 
 
@@ -67,6 +72,7 @@ Let's put a placeholder:
 Then go back to our browser and refresh, you'll see the index page.
 
 ### To Create New Posts
+------------------------
 
 Next, we want to have the ability to create new posts.     
 To do that, let's start in our post controller and we're gonna add a new action.
@@ -109,6 +115,7 @@ And we'll see the new form now.
 Now, we have a new form, but we don't have a model to associate it with which means we won't be able to save our data.
 
 ### To Save Our Posts Data
+--------------------------
 
 So let's do that next inside of our terminal. Let's generate a model.
 We're going to do the fields we just created in our form `new.html.erb`, title and body.
@@ -198,6 +205,7 @@ end
 So now we can new post in `http://localhost:3000/posts/new`
 
 ### To List Out All Of the Posts
+---------------------------------
 
 Then, we want to list out all of the post that's going to be at slash or at the root of the application(http://localhost:3000).
 
@@ -250,6 +258,7 @@ $ git checkout -b styling
 ```
 
 ### To Create the Sidebar
+---------------------------
 
 We are focus on the layout     
 `app/views/layouts/application.html.erb`
@@ -1005,6 +1014,7 @@ Basically, we're setting font all the sidebar styles.
 If we inspect the source, we still have the post. They're just hidden behind the sidebar right now because we have not added the wrapper to the `application.html.erb`
 
 ### To Add Navbars and Sign-in Button
+---------------------------------------
 
 So few more things we want to do is that I want to add a sign-in button.
 `app/views/layouts/application.html.erb`
@@ -1068,6 +1078,7 @@ Note: My button tag doesn't work in Rails5, so I change it to the following code
 ```
 
 ### Page Wrapper
+---------------------
 
 We go in the show page and you can see it's not pushed over like it should be on. And then the new post obviously the same thing is happening.
 In `app/views/posts/new.html.erb`, I'm just going to wrap this entire thing inside of a page_wrapper `div` which is all styled and we'll fix the formatting for us.
