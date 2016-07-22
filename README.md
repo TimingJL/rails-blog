@@ -66,6 +66,8 @@ Let's put a placeholder:
 ```
 Then go back to our browser and refresh, you'll see the index page.
 
+### To Create New Posts
+
 Next, we want to have the ability to create new posts.     
 To do that, let's start in our post controller and we're gonna add a new action.
 ```ruby
@@ -105,6 +107,8 @@ Then, if we go back to our browser, we should be able to go `http://localhost:30
 And we'll see the new form now.
 
 Now, we have a new form, but we don't have a model to associate it with which means we won't be able to save our data.
+
+### To Save Our Posts Data
 
 So let's do that next inside of our terminal. Let's generate a model.
 We're going to do the fields we just created in our form `new.html.erb`, title and body.
@@ -193,6 +197,8 @@ end
 ```
 So now we can new post in `http://localhost:3000/posts/new`
 
+### To List Out All Of the Posts
+
 Then, we want to list out all of the post that's going to be at slash or at the root of the application(http://localhost:3000).
 
 So first we need to edit are `index action`.     
@@ -216,7 +222,7 @@ class PostsController < ApplicationController
 
 And then inside of our `app/views/posts/index.html.erb`     
 I'm going to do a loop through each of the posts.
-So for each of the post, I want to put them in a post rapper `div` and the title of the post is going to be in `h2` tag class of title.
+So for each of the post, I want to put them in a post wrapper `div` and the title of the post is going to be in `h2` tag class of title.
 And we're gonna to do link to `post.title` and that's going to be the post path.
 And then, on the index page, I don't want the description we're just going to do the time at risk or the date it was created that.
 On the index, I want to have the actual date.
@@ -242,6 +248,9 @@ Let's do it on a new branch.
 ```console
 $ git checkout -b styling
 ```
+
+### To Create the Sidebar
+
 We are focus on the layout     
 `app/views/layouts/application.html.erb`
 I'm going to create a sidebar that's fixed a header and then the main body.
@@ -993,7 +1002,9 @@ a {
 ```
 
 Basically, we're setting font all the sidebar styles.
-If we inspect the source, we still have the post. They're just hidden behind the sidebar right now because we have not added the rapper to the `application.html.erb`
+If we inspect the source, we still have the post. They're just hidden behind the sidebar right now because we have not added the wrapper to the `application.html.erb`
+
+### To Add Navbars and Sign-in Button
 
 So few more things we want to do is that I want to add a sign-in button.
 `app/views/layouts/application.html.erb`
@@ -1055,6 +1066,8 @@ Note: My button tag doesn't work in Rails5, so I change it to the following code
   ...
   </body>
 ```
+
+### Page Wrapper
 
 We go in the show page and you can see it's not pushed over like it should be on. And then the new post obviously the same thing is happening.
 In `app/views/posts/new.html.erb`, I'm just going to wrap this entire thing inside of a page_wrapper `div` which is all styled and we'll fix the formatting for us.
