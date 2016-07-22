@@ -2,9 +2,9 @@
 
 ![Ubuntu version](https://img.shields.io/badge/Ubuntu-16.04%20LTS-orange.svg)
 ![Rails version](https://img.shields.io/badge/Rails-v5.0.0-blue.svg)
-![ruby version](https://img.shields.io/badge/ruby-v2.3.1p112-red.svg)
+![Ruby version](https://img.shields.io/badge/Ruby-v2.3.1p112-red.svg)
 
-Mackenzie Child's video really inspire me. So I decided to follow all of his rails video tutorial to learn how to build a web app. Through the video, I would try to build the web app by my self and record the courses step by step in text to facilitate the review.
+Mackenzie Child's video really inspired me. So I decided to follow all of his rails video tutorial to learn how to build a web app. Through the video, I would try to build the web app by my self and record the courses step by step in text to facilitate the review.
 
 
 # Project 2: How To Build A Blog In Rails     
@@ -1117,5 +1117,91 @@ $ git checkout master
 $ git merge styling
 ```
 ![image](https://github.com/TimingJL/blog/blob/master/pic/Styling%20and%20structure.jpeg)
+
+
+### Throw Errors Or Validation Message
+We have no errors or validations in place that will throw errors if, for example, we don't have a post or missing the body text. So I want to go ahead and fix that.
+
+`app/models/post.rb`, we're just going to add some validations to our model.
+```ruby
+class Post < ApplicationRecord
+	validates :title, presence: true, length: { minimum: 5}
+	validates :body, presence: true
+end
+```
+
+In `app/controllers/posts_controller.rb`, we have two things to tweek the new method
+```ruby
+def new
+	@post = Post.new
+end
+```
+In create method, we want to do a render instead of a redirect because a redirect would do a entirely new HTTP refresh which means you would lose all the content inside of the form. If I wrote a big long blog post, and I accidentally messed up it couldn't save. I lost all that I would be extremely frustrating. So doing the render will keep all that content in place.
+```ruby
+def create
+	@post = Post.new(post_params)
+
+	if @post.save
+		redirect_to @post
+	else
+		render 'new'
+	end
+end	
+```
+
+Then we need to add some error messages to our post so we can actually see what the errors are and actually be able to fix them.
+In `app/views/posts/new.html.erb`, under the form_for, I'm gonna do `if` statement
+```html
+
+	<div id="page_wrapper">
+		<h1>New post!</h1>
+
+		<%= form_for :post, url: posts_path do |f| %>
+			<% if @post.errors.any? %>
+				<div id="errors">
+					<h2><%= pluralize(@post.errors.count, "errors") %></h2>*
+				</div>
+			<% end %>
+			<p>
+				<%= f.label :title %><br>
+				<%= f.text_field :title %><br>
+			</p>
+
+			<p>
+				<%= f.label :body %><br>
+				<%= f.text_area :body %>
+			</p>
+
+			<p>
+				<%= f.submit %>
+			</p>	
+		<% end %>
+	</div>
+```
+What the pluralize does is anything past account of one, so at 2,3 on , it will automatically pluralize it for us. If not, it will just be error.
+Now, we're gonna do a number of erorrs prevented this post from saving. And then we want to list out the actual errors.
+```html
+
+	<% if @post.errors.any? %>
+		<div id="errors">
+			<h2><%= pluralize(@post.errors.count, "errors") %> prevented this post from saving</h2>
+			<ul>
+				<% @post.errors.full_messages.each do |msg| %>
+					<li><%= msg %></li>
+				<% end %>
+			</ul>
+		</div>
+	<% end %>
+	...
+	...
+```
+Now, if we go back to the `new.html.erb` form, I just try to  save it should throw up some errors for us
+![image](https://github.com/TimingJL/blog/blob/master/pic/error_message.jpeg)
+
+So that's pretty much done for the validation. Let's to git
+```console
+$ git add .
+$ git commit -am "Add validations to post form"
+```
 
 To be continute...
