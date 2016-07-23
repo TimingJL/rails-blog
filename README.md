@@ -1130,7 +1130,7 @@ class Post < ApplicationRecord
 end
 ```
 
-In `app/controllers/posts_controller.rb`, we have two things to tweek the new method
+In `app/controllers/posts_controller.rb`, we have two things to tweak the new method
 ```ruby
 def new
 	@post = Post.new
@@ -1198,10 +1198,91 @@ Now, we're gonna do a number of erorrs prevented this post from saving. And then
 Now, if we go back to the `new.html.erb` form, I just try to  save it should throw up some errors for us
 ![image](https://github.com/TimingJL/blog/blob/master/pic/error_message.jpeg)
 
-So that's pretty much done for the validation. Let's to git
+So that's pretty much done for the validation. Let's git
 ```console
 $ git add .
 $ git commit -am "Add validations to post form"
 ```
+# To Edit Or Delete A Post
+Now we want to  the ability to edit or delete a post. Let's start with the edit.
+
+### Edit
+Inside of our post controller, we need to add ad edit and a update method for action.
+`app/controllers/posts_controller.rb`
+```ruby
+def edit
+	@post = Post.find(params[:id])
+end
+
+def update
+	@post = Post.find(params[:id])
+
+	if @post.update(params[:post].permit(:title, :body))
+		redirect_to @post
+	else
+		render 'edit'
+	end		
+end
+```
+Now we need to add and edit view and form. We're going to be using the same form as the new. So I'm going to go ahead and convert the new one as well as the edit to a partial.
+So what I'm going to do is create a new file called `edit.html.erb` in `app/views/posts`, and also a new one called `_form.html.erb`.
+So I'm just going to copy `new.html.erb` form and going to replace it with render form which is going to grab the partial for us.
+Then in the form, we need to make a few tweaks
+In `app/views/posts/new.html.erb`
+```html
+
+	<div id="page_wrapper">
+		<h1>New Post</h1>
+
+		<%= render 'form' %>
+	</div>
+```
+
+In the `app/views/posts/_form.html.erb`, we need to make a few tweaks.
+```html
+
+	<%= form_for @post do |f| %>
+		<% if @post.errors.any? %>
+			<div id="errors">
+				<h2><%= pluralize(@post.errors.count, "error") %> prevented this post from saving:</h2>
+				<ul>
+					<% @post.errors.full_messages.each do |msg| %>
+						<li><%= msg %></li>
+					<% end %>
+				</ul>
+			</div>
+		<% end %>
+		<%= f.label :title %><br>
+		<%= f.text_field :title %><br>
+		<br>
+		<%= f.label :body %><br>
+		<%= f.text_field :body %><br>
+		<br>
+		<%= f.submit %>
+	<% end %>
+```
+
+And inside the edit `app/views/posts/edit.html.erb`, let's just copy this paste it going to say "Edit post"
+```html
+
+	<div id="page_wrapper">
+		<h1>Edit Post</h1>
+
+		<%= render 'form' %>
+	</div>
+```
+
+And let's go to our show page and add the ability to edit a post 
+In `app/views/posts/show.html.erb`
+```html
+
+	<p class="data">
+		Submitted <%= time_ago_in_words(@post.created_at) %> Ago
+			<%= link_to 'Edit', edit_post_path(@post)%>
+	</p>
+```
+
+So now if we go back to our app in browser, we see edit
+![image](https://github.com/TimingJL/blog/blob/master/pic/edit_button.jpeg)
 
 To be continute...
