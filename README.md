@@ -1285,4 +1285,7 @@ In `app/views/posts/show.html.erb`
 So now if we go back to our app in browser, we see edit
 ![image](https://github.com/TimingJL/blog/blob/master/pic/edit_button.jpeg)
 
+After click the edit button, we jump into the edit page
+![image](https://github.com/TimingJL/blog/blob/master/pic/edit_page.jpeg)
+
 To be continute...
