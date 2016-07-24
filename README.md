@@ -1288,4 +1288,43 @@ So now if we go back to our app in browser, we see edit
 After click the edit button, we jump into the edit page
 ![image](https://github.com/TimingJL/blog/blob/master/pic/edit_page.jpeg)
 
+### Delete
+So let's have the ability to delte one now. Back to our `post controller`, At the bottom, I'm going to put a destroy method
+`app/controllers/posts_controller.rb`
+```ruby
+def destroy
+	@post = Post.find(params[:id])
+	@post.destroy
+
+	redirect_to posts_path
+end
+```
+
+We need to add a link to delete it as well. 
+So inside of our `app/views/pusts/show.html.erb`, we're gonna to do another link to this.
+```html
+
+	<p class="data">
+		Submitted <%= time_ago_in_words(@post.created_at) %> Ago
+			<%= link_to 'Edit', edit_post_path(@post)%>
+			<%= link_to 'Delete', post_path(@post), method: :delete, data:{confirm: "Are you sure?"} %>
+	</p>
+```
+After delete the post, we should go back home
+`app/controllers/posts_controller.rb`
+```ruby
+def destroy
+	@post = Post.find(params[:id])
+	@post.destroy
+
+	redirect_to root_path
+end
+```
+
+So let's do commit it
+```console
+$ git add .
+$ git commit -am 'Edit and Delete Posts'
+```
+
 To be continute...
