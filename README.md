@@ -1327,4 +1327,184 @@ $ git add .
 $ git commit -am 'Edit and Delete Posts'
 ```
 
+# Add Comment
+The next thing I want to do is add the ability to add a comment. For that, let's start by creating a new model to hold the comments.
+The name of the commenter is going to be a string, and then we're going to do body to be text, and we're going to reference this to the post, so a comment belongs to a post.
+```console
+$ rails g model Comment name:string body:text post:references
+```
+Now in `app/models/comment.rb`, you can see a comment belongs to a post which is from the post references.
+And then `app/db/migrate` can see the migration file it created for us as well.
+So let's go ahead and migrate the database
+```console
+$ rake db:migrate
+```
+
+One thing I know we need to do is we need to add an association to the posts.
+Under `app/models/post.rb`, we going to do a post has many comments
+```ruby
+class Post < ApplicationRecord
+	has_many :comments
+	validates :title, presence: true, length: { minimum: 5}
+	validates :body, presence: true
+end
+```
+
+Next we need to add some routes for comments
+`app/config/routes.rb`
+```ruby
+Rails.application.routes.draw do
+  resources :posts do
+  	resources :comments
+  end
+  
+  root "posts#index"
+end
+```
+
+Now, if we run `rake routes`
+```console
+$ rake routes
+```
+You can see all of our routes we have made.
+
+So now we need to generate a comment controller.
+```console
+$ rails g controller Comments
+```
+And in order to create a comment, we need to add a `create method` inside of our controller
+In side of `app/controllers/comments_controller.rb`
+```ruby
+class CommentsController < ApplicationController
+	def create
+		@post = Post.find(params[:post_id])
+		@comment = @post.comments.create(params[:comment].permit(:name, :body))
+
+		redirect_to post_path(@post)
+	end
+end
+```
+
+We're going to create a few partials and then we're gonna import those partials into the post show page.
+Let's create a new file under `app/views/comments` named `_comment.html.erb`.
+And another one, we're going to save as `_form.html.erb`
+
+So inside the `app/views/comments/_form.html.erb`, we want to create a `form_for`
+```html
+
+	<%= form_for([@post, @post.comments.build]) do |f| %>
+		<%= f.label :name %><br>
+		<%= f.text_field :name %><br>
+		<br>
+		<%= f.label :body %><br>
+		<%= f.text_area :body %><br>
+		<br>
+		<%= f.submit %>
+	<% end %>
+```
+
+Now inside of our comment, we're going to want to create what the comments are actually gonna look like or how they're going to be structured.
+```html
+
+	<div class="comment clearfix">
+		<div class="comment_content">
+			<p class="comment_name"><strong><%= comment.name %></strong></p>
+			<p class="comment_body"><%= comment.body %></p>
+			<p class="comment_time"><%= time_ago_in_words(comment.created_at) %> Ago</p>
+		</div>
+	</div>
+```
+So each comment is going to be insdie of class comment, and there's going to be a content, name, body and time.
+The reason we put it in a `comment_content` is because later we're going to add delete button.
+
+So inside of our `app/views/posts/show.html.erb`
+```html
+
+	<div id="post_content">
+
+		<h1 class="title">
+			<%= @post.title %>
+		</h1>
+
+		<p class="data">
+			Submitted <%= time_ago_in_words(@post.created_at) %> Ago
+				<%= link_to 'Edit', edit_post_path(@post)%>
+				<%= link_to 'Delete', post_path(@post), method: :delete, data:{confirm: "Are you sure?"} %>
+		</p>
+
+		<p class="body">
+			<%= @post.body %>
+		</p>
+
+		<div id="comments">
+			<h2><%= @post.comments.count %> Comments</h2>
+			<%= render @post.comments %>
+
+			<h3>Add a comment:</h3>
+			<%= render "comments/form" %>
+		</div>	
+
+	</div>
+```
+
+So our comments now show up.
+
+### Delete Comment
+So we need to add the ability for our signed_in user which we're not going to do right now but for a user to be able to delte a comment.
+Back in our `app/controllers/comments_controller.rb`
+```ruby
+class CommentsController < ApplicationController
+	def create
+		@post = Post.find(params[:post_id])
+		@comment = @post.comments.create(params[:comment].permit(:name, :body))
+
+		redirect_to post_path(@post)
+	end
+
+	def destroy
+		@post = Post.find(params[:post_id])
+		@comment = @post.comments.find(params[:id])
+		@comment.destroy
+
+		redirect_to post_path(@post)
+	end
+end
+```
+
+Now in our `app/views/comments/_comment.html.erb`
+```html
+
+	<div class="comment clearfix">
+		<div class="comment_content">
+			<p class="comment_name"><strong><%= comment.name %></strong></p>
+			<p class="comment_body"><%= comment.body %></p>
+			<p class="comment_time"><%= time_ago_in_words(comment.created_at) %> Ago</p>
+		</div>
+
+		<p><%= link_to 'Delete', [comment.post, comment],
+									  method: :delete,
+									  class: "button",
+									 	data: { confirm: 'Are you sure?' } %></p>
+	</div>
+```
+Now for you refresh the browser, we see the delete button.
+
+One thing last before we move on is we we need to make sure that if we delete a post, the comments delete as well.
+Otherwise, if we delete a post, and not the comments, then the comments would just take up space on the database but wouldn't actually be associated with a post.
+So what we're going to do inside of our post models, we're going to `have many comments`, dependent, and destroy
+```ruby
+class Post < ApplicationRecord
+	has_many :comments, dependent: :destroy
+	validates :title, presence: true, length: { minimum: 5}
+	validates :body, presence: true
+end
+```
+So that way if a post gets deleted, the comment gets delete from the database as well.
+![image](https://github.com/TimingJL/blog/blob/master/pic/delete_button.jpeg)
+Let's do git
+```console
+$ git add .
+$ git commit -am 'Add comments'
+```
+
 To be continute...
