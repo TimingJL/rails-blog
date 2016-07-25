@@ -8,9 +8,12 @@ Mackenzie Child's video really inspired me. So I decided to follow all of his ra
 
 
 # Project 2: How To Build A Blog In Rails     
-https://mackenziechild.me/12-in-12/2/ 
 
 The blog is pretty simple, but we're able to add posts and comments and users, as well as authentication. So only sign-in users are able to edit and destroy, or even add post your comments.
+
+https://mackenziechild.me/12-in-12/2/         
+
+![image](https://github.com/TimingJL/blog/blob/master/pic/blog.jpeg)
 
 ### Highlights of this course
 1. Users
@@ -1740,9 +1743,9 @@ Under `app/views/comments/_comment.html.erb`
 
 
 So far, Mackenzie's tutorial video is finished. But he forgot to implement the `LogOut` button and `LogIn` button.
-So next we're going to do is to do this.
+So next we're going to do is to implement these buttons.
 
-### LogIn, LogOut and Sign up
+### LogIn, LogOut and SignUp
 
 Under `app/views/layouts/application.html.erb`
 ```html
@@ -1762,6 +1765,13 @@ Under `app/views/layouts/application.html.erb`
 The `:method => :delete` part is required if you use the default HTTP method. 
 To change it, you will need to tell Devise this:
 Under `app/config/initializers/devise.rb`
+change
+
+	# config/initializers/devise.rb
+	# The default HTTP method used to sign out a resource. Default is :delete.
+	config.sign_out_via = :delete
+
+to
 
 	# config/initializers/devise.rb
 	# The default HTTP method used to sign out a resource. Default is :delete.
