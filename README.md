@@ -1602,7 +1602,198 @@ to
     </div>
 ```
 So let's commit we just did
+```console
+$ git add . 
+$ git commit -am ''
+```
+
+# Add User
+The final thing we need to do is add a user. So we want to make sure that not just anyone can create a post or login.
+So I don't want just anyone to be able to see these buttons.
+
+### Install gem devise
+In our `Gemfile`, we need to add `devise`
+
+	gem 'devise'
+Save that and run `bundle install`, and restart the server.
+
+I'm going to install `devise`
+```console
+$ rails g devise:install
+```
+You will see
+```
+	Some setup you must do manually if you haven't yet:
+
+	  1. Ensure you have defined default url options in your environments files. Here
+	     is an example of default_url_options appropriate for a development environment
+	     in config/environments/development.rb:
+
+	       config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+	     In production, :host should be set to the actual host of your application.
+
+	  2. Ensure you have defined root_url to *something* in your config/routes.rb.
+	     For example:
+
+	       root to: "home#index"
+
+	  3. Ensure you have flash messages in app/views/layouts/application.html.erb.
+	     For example:
+
+	       <p class="notice"><%= notice %></p>
+	       <p class="alert"><%= alert %></p>
+
+	  4. You can copy Devise views (for customization) to your app by running:
+
+	       rails g devise:views
+```
+
+So now it gives us a few things to do. Let's go ahead and do those now.
+Under `app/config/environments/development.rb`
+We're just going to add this line to the bottom
+
+	config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+I'm going to add a view
+```console
+$ rails g devise:views
+```
+
+So now that we have done all that, so let's go ahead and generate a user
+```console
+$ rails g devise User
+```
+
+Let's create a migration for us a well as a user model
+```console
+$ rake db:migrate
+```
+
+Let's restart the server and go to `http://localhost:3000/users/sign_up`
+![image](https://github.com/TimingJL/blog/blob/master/pic/user_signup.jpeg)
+
+I know the page is going to be neeeds to wrap around it.
+`app/views/devise/sessions/new.html`
+```html
+
+	<div id="page_wrapper">
+		...
+		...
+		...
+	</div>>
+```
+
+### Add authentication
+Inside the post controller
+`app/controllers/posts_controller.rb`, at the top, we're going to add `before_action`
+```ruby
+class PostsController < ApplicationController
+	before_action :authenticate_user!,  except: [:index, :show]
+	...
+	...
+end
+```
+
+Let's go back to the incognito window. If I try to do new post, it should send me to the sign_in.
+
+So now we need to make sure in our views, we can't see the button if we're not signed in.
+I'm going to `app/views/layouts/application.html.erb`
+```html
+
+	<% if user_signed_in? %>
+	<div class="buttons">
+	  <%= link_to "New Post", new_post_path, class: 'button' %>
+	  <button class="button">Log Out</button>
+	</div>
+	<% end %>
+```
+
+```html
+
+	<% if !user_signed_in? %>
+		  <p class="sign_in">Admin Login</p>
+	<% end %>
+```
+
+We don't want the edit or delete to show
+Under `app/views/posts/show.html.erb`
+```html
+
+	<% if user_signed_in? %>
+		<%= link_to 'Edit', edit_post_path(@post)%>
+		<%= link_to 'Delete', post_path(@post), method: :delete, data:{confirm: "Are you sure?"} %>
+	<% end %>
+```
+
+Under `app/views/comments/_comment.html.erb`
+```html
+
+	<% if user_signed_in? %>
+		<p><%= link_to 'Delete', [comment.post, comment],
+									  method: :delete,
+									  class: "button",
+									 	data: { confirm: 'Are you sure?' } %></p>
+ 	<% end %>
+```
 
 
 
-To be continute...
+So far, Mackenzie's tutorial video is finished. But he forgot to implement the `LogOut` button and `LogIn` button.
+So next we're going to do is to do this.
+
+### LogIn, LogOut and Sign up
+
+Under `app/views/layouts/application.html.erb`
+```html
+
+	<% if user_signed_in? %>
+	<div class="buttons">
+	  <%= link_to "New Post", new_post_path, class: 'button' %>
+	  <%= link_to "LogOut", destroy_user_session_path, :method => :delete, class: 'button' %>
+	</div>
+	<% else %>
+	 <div class="buttons">
+	  <%= link_to "SingUp", new_user_registration_path, class: 'button' %>
+	  <%= link_to "LogIn", user_session_path, class: 'button' %>
+	</div>     
+	<% end %>
+```
+The `:method => :delete` part is required if you use the default HTTP method. 
+To change it, you will need to tell Devise this:
+Under `app/config/initializers/devise.rb`
+
+	# config/initializers/devise.rb
+	# The default HTTP method used to sign out a resource. Default is :delete.
+	config.sign_out_via = :get
+
+https://github.com/plataformatec/devise/wiki/How-To:-Add-sign_in,-sign_out,-and-sign_up-links-to-your-layout-template        
+
+Finally, styling the sign-up and sign-in page.
+Under `app/views/devise/new.html.erb`
+```html
+
+	<div id="page_wrapper">
+		...
+		...
+		...
+	</div>>
+```
+
+Under `app/views/devise/edit.html.erb`
+```html
+
+	<div id="page_wrapper">
+		...
+		...
+		...
+	</div>>
+```
+
+So let's commit what we just did
+```console
+$ git add .
+$ git commit -am 'Add devise and users'
+```
+
+The blog we built is finished!
