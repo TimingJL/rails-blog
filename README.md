@@ -1507,4 +1507,102 @@ $ git add .
 $ git commit -am 'Add comments'
 ```
 
+# About Page
+The next thing I want to doe is for quite a while we've the `About page` just be static.
+So I'm going to doe is generate a controller for the pages
+```console
+$ rails g controller pages
+```
+
+I'm going to open up that controller `pages_controller.rb`
+I know I want a `about page` tring to fin out `about action`
+Under `app/controllers/pages_controller.rb`
+```ruby
+class PagesController < ApplicationController
+	def about
+	end
+end
+```
+
+And then we need to go in to `app/config/routes.rb` had a route for our about.
+```ruby
+Rails.application.routes.draw do
+  resources :posts do
+  	resources :comments
+  end
+  
+  root "posts#index"
+
+  get '/about', to: 'pages#about'
+end
+```
+
+Under `app/views/pages`, we're going to create a new one called `about.html.erb`
+`app/views/pages/about.html.erb`
+```html
+
+	<div id="page_wrapper">
+		<table style="width:100%">
+		  <tr>
+		    <td>
+				<div id="profile_image">
+					<%= image_tag "profile.jpeg" %>
+				</div>
+		    </td>
+
+		    <td>
+				<div id="content">
+					<h1>Hey, I'm TimingJL</h1>
+					<p>Welcome to week 2 of my 12 Web Apps in 12 Weeks Challenge.</p>
+					<p>Mackenzie Child's video really inspired me. So I decided to follow all of his rails video tutorial to learn how to build a web app. Through the video, I would try to build the web app by my self and record the courses step by step in text to facilitate the review.</p>
+					<p>This week I built a blog in Rails 5. You're actually on the demo application right now. Cool stuff, right!.</p>
+					<p>If you'd like to follow along as I learn more Ruby on Rails, find me on Github <a href="https://github.com/TimingJL">@TimingJL</a></p>
+					<p>Email: eefozeo@gmail.com</p>
+				</div>
+		    </td>
+		  </tr>
+		</table>
+	</div>
+```
+
+So let's take care the tile
+Back to our `app/views/layouts/application.html.erb`, change the static 'About' to link
+```html
+
+	<li><%= link_to "About", about_path %></li>
+```
+
+Another thing that kind of bugs me is I don't wnat I'll post makes sense for when listing our all the posts but I'm really about doesn't really make sense.
+So I'm going to add some `if` statement
+Under `app/views/layouts/application.html.erb`
+We change this:
+```html
+
+  	<div id="header">
+  		<p>All Posts</p>
+  		...
+  		...
+  	</div>
+```
+
+to 
+
+```html
+
+    <div id="header">
+      <% if current_page?(root_path) %>
+        <p>All Posts</p>
+      <% elsif current_page?(about_path) %>
+        <p>About</p>
+      <% else %>
+        <%= link_to "Back to All Posts", root_path %>
+      <% end %>
+      ...
+      ...
+    </div>
+```
+So let's commit we just did
+
+
+
 To be continute...
